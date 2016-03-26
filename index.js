@@ -5,23 +5,40 @@ var pg = require('pg')
 var moment = require('moment')
 var url = require('url')
 var wget = require('wget-improved')
-var http = require('http')
+var request = require('request')
+var lookup = require('node-rest-client').Client
+var iplookup = new lookup()
+var iplookupapi = "http://www.linkexpander.com/?url="
+var myip = ''
+var site = ''
+
+dns.lookup(os.hostname(), function (err, address, family) {
+	myip = address
+	console.log("System IP address: " + address)
+})
 
 moment().format('DD-MM-YY')
 var datetoday = moment(Date.now()).format('DDMMYY')
 
-var conString = "postgres://siteswatch:mylog@localhost/pcaplog";
-var db = new pg.Client(conString);
+var conString = "postgres://siteswatch:mylog@localhost/pcaplog"
+var db = new pg.Client(conString)
 
 db.connect(function(err) {
 	if(err) {
-		return console.error('could not connect to postgres', err);
+		return console.error('could not connect to postgres', err)
 	}
 })
 
-db.query("CREATE TABLE IF NOT EXISTS rlog" + datetoday + " (start boolean, src inet, dst inet, time time)", function(err, result) {
+db.query("CREATE TABLE IF NOT EXISTS rlog" + datetoday + " (start boolean, dst inet, startdate varchar)", function(err, result) {
 	if(err)
-		console.log("rlog Table creation error!");
+		console.log("😕 rlog table")
+})
+
+db.query("CREATE TABLE IF NOT EXISTS tlog" + datetoday + " (url varchar, time varchar)", function(err, result) {
+	if(err) {
+		console.log("😟 tlog table")
+		console.log(err)
+	}
 })
 
 var tcp_tracker = new pcap.TCPTracker()
@@ -30,24 +47,51 @@ var pcap_session = pcap.createSession("", "")
 tcp_tracker.on('session', function (session) {
 	var src = session.src_name.split(":")[0]
 	var dst = session.dst_name.split(":")[0]
-	console.log("Start of session between " + src + " and " + dst);
-	db.query("INSERT INTO rlog" + datetoday + " VALUES (TRUE, \'" + src + "\', \'" + dst + "\', LOCALTIME(0))", function(err, result) {
-		if(err)
-			console.log("rlog Table (start session) insertion error!");
-	});
+	var serv = src === myip ? dst : src
+	if(serv !== "192.186.215.100") { //ip of longurl api
+		console.log("Start of session between " + src + " and " + dst)
+		db.query("INSERT INTO rlog" + datetoday + " VALUES (TRUE, \'" + serv + "\', " + moment() +")", function(err, result) {
+			if(err) {
+				console.log("😫 rlog insertion")
+				console.log(err)
+			}
+		})
+	}
   
 	session.on('end', function (session) {
 		var src = session.src_name.split(":")[0]
 		var dst = session.dst_name.split(":")[0]
-		console.log("End of TCP session between " + src + " and " + dst);
-		db.query("INSERT INTO rlog" + datetoday + " VALUES (FALSE, \'" + src + "\', \'" + dst + "\', LOCALTIME(0))", function(err, result) {
-			if(err)
-				console.log("rlog table (end session) insertion error!");
-		});
-	});
-});
+		var serv = src === myip ? dst : src
+		if(serv !== "192.186.215.100") { //ip of longurl api
+			var startdate = ''
+			var start = db.query("DELETE FROM rlog" + datetoday + " WHERE ctid IN (SELECT ctid FROM rlog" + datetoday + " ORDER BY startdate LIMIT 1) RETURNING *", function(err, result) {
+				if(err) {
+					console.log("😞 rlog deletion")
+					console.log(err)
+				}
+			})
+			start.on('row', function(row) {
+				startdate = row.startdate
+			})
+			var totalTime = moment.duration(moment().diff(startdate)).asSeconds()
+			iplookup.get(iplookupapi + serv, function(data, response) {
+				site = data.toString('utf8')
+				console.log("site: " + site)
+			})
+			if(site) {
+				db.query("INSERT INTO tlog" + datetoday + " VALUES (\'" + site + "\', \'" + totalTime + "\')", function(err, result) {
+					if(err) {
+						console.log("😔 tlog insertion")
+						console.log(err)
+					}
+				})
+			}
+			console.log("End of TCP session between " + src + " and " + dst)
+		}
+	})
+})
 
 pcap_session.on('packet', function (raw_packet) {
-	var packet = pcap.decode.packet(raw_packet);
-	tcp_tracker.track_packet(packet);
-});
+	var packet = pcap.decode.packet(raw_packet)
+	tcp_tracker.track_packet(packet)
+})
