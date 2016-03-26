@@ -7,6 +7,9 @@ var url = require('url')
 var wget = require('wget-improved')
 var request = require('request')
 var express = require('express')
+var path = require('path')
+var fs = require('fs')
+var d3 = require('d3')
 var app = express()
 var lookup = require('node-rest-client').Client
 var iplookup = new lookup()
@@ -19,9 +22,26 @@ dns.lookup(os.hostname(), function (err, address, family) {
 	console.log("System IP address: " + address)
 })
 
-app.get('/', function(req, res) {
-  res.send('hello world');
-});
+app.set('views', '.')
+app.set('view engine','ejs')
+
+app.get('/',function(req,res) {
+	fs.writeFile("stats.tsv", "", function(err) {
+	    if(err) {
+	        return console.log(err);
+	    }
+	})
+	var result = db.query("SELECT * FROM tlog" + datetoday)
+	result.on('row', function(row) {
+		console.log('user "%s" is %s years old', row.url, row.time)
+		fs.appendFile("stats.tsv", row.url + " " + row.time + "\n", function(err) {
+		    if(err) {
+		        return console.log(err);
+		    }
+		})
+	    })
+		res.render('stats')
+})
 
 moment().format('DD-MM-YY')
 var datetoday = moment(Date.now()).format('DDMMYY')
@@ -85,6 +105,7 @@ tcp_tracker.on('session', function (session) {
 				console.log("site: " + site)
 			})
 			if(site) {
+				totalTime = totalTime === 0 ? 1 : totalTime 
 				db.query("INSERT INTO tlog" + datetoday + " VALUES (\'" + site + "\', \'" + totalTime + "\')", function(err, result) {
 					if(err) {
 						console.log("😔 tlog insertion")
@@ -101,3 +122,5 @@ pcap_session.on('packet', function (raw_packet) {
 	var packet = pcap.decode.packet(raw_packet)
 	tcp_tracker.track_packet(packet)
 })
+
+app.listen(3000);
