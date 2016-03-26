@@ -31,16 +31,29 @@ app.get('/',function(req,res) {
 	        return console.log(err);
 	    }
 	})
+	fs.appendFile("stats.tsv", "letter	frequency\n", function(err) {
+		if(err) {
+			return console.log(err)
+		}
+	})
 	var result = db.query("SELECT * FROM tlog" + datetoday)
 	result.on('row', function(row) {
 		console.log('user "%s" is %s years old', row.url, row.time)
-		fs.appendFile("stats.tsv", row.url + " " + row.time + "\n", function(err) {
+		fs.appendFile("stats.tsv", row.url + "\t" + row.time + "\n", function(err) {
 		    if(err) {
 		        return console.log(err);
 		    }
 		})
 	    })
 		res.render('stats')
+})
+
+app.get('/data.tsv', function(req, res) {
+	res.sendFile(__dirname + '/data.tsv');
+})
+
+app.get('/stats.tsv', function(req, res) {
+	res.sendFile(__dirname + '/stats.tsv');
 })
 
 moment().format('DD-MM-YY')
@@ -106,12 +119,12 @@ tcp_tracker.on('session', function (session) {
 			})
 			if(site) {
 				totalTime = totalTime === 0 ? 1 : totalTime 
-				db.query("INSERT INTO tlog" + datetoday + " VALUES (\'" + site + "\', \'" + totalTime + "\')", function(err, result) {
+				/*db.query("INSERT INTO tlog" + datetoday + " VALUES (\'" + site + "\', \'" + totalTime + "\')", function(err, result) {
 					if(err) {
 						console.log("😔 tlog insertion")
 						console.log(err)
 					}
-				})
+				})*/
 			}
 			console.log("End of TCP session between " + src + " and " + dst)
 		}

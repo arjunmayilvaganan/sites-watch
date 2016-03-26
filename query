@@ -1,0 +1,14 @@
+INSERT INTO tlog260316 VALUES ('http://facebook.com','24');
+INSERT INTO tlog260316 VALUES ('http://quora.com','12');
+INSERT INTO tlog260316 VALUES ('http://github.com','17');
+INSERT INTO tlog260316 VALUES ('http://medium.com','4');
+INSERT INTO tlog260316 VALUES ('http://gmail.com','13');
+INSERT INTO tlog260316 VALUES ('http://google.co.in','22');
+INSERT INTO tlog260316 VALUES ('http://stackoverflow.com','16');
+INSERT INTO tlog260316 VALUES ('http://reddit.com','9');
+INSERT INTO tlog260316 VALUES ('http://codepen.io','3');
+INSERT INTO tlog260316 VALUES ('http://ytpak.com','12');
+INSERT INTO tlog260316 VALUES ('http://','')
+INSERT INTO tlog260316 VALUES ('','')
+INSERT INTO tlog260316 VALUES ('','')
+INSERT INTO tlog260316 VALUES ('','')
