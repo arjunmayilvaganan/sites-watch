@@ -6,6 +6,8 @@ var moment = require('moment')
 var url = require('url')
 var wget = require('wget-improved')
 var request = require('request')
+var express = require('express')
+var app = express()
 var lookup = require('node-rest-client').Client
 var iplookup = new lookup()
 var iplookupapi = "http://www.linkexpander.com/?url="
@@ -16,6 +18,10 @@ dns.lookup(os.hostname(), function (err, address, family) {
 	myip = address
 	console.log("System IP address: " + address)
 })
+
+app.get('/', function(req, res) {
+  res.send('hello world');
+});
 
 moment().format('DD-MM-YY')
 var datetoday = moment(Date.now()).format('DDMMYY')
