@@ -71,7 +71,7 @@
     "json-stringify-safe": "3.0.0",
     "jsonpointer": "2.0.0",
     "jsprim": "1.2.2",
-    "lodash": "4.5.1",
+    "lodash": "4.17.15",
     "lru-cache": "2.7.3",
     "mime": "1.2.11",
     "mime-db": "1.22.0",
