@@ -73,7 +73,7 @@
     "jsprim": "1.2.2",
     "lodash": "4.17.15",
     "lru-cache": "2.7.3",
-    "mime": "1.2.11",
+    "mime": "2.4.4",
     "mime-db": "1.22.0",
     "mime-types": "2.1.10",
     "moment": "2.24.0",
