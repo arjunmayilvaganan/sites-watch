@@ -120,7 +120,7 @@
     "tomahawk": "0.1.6",
     "tomahawk-plugin-kv-memory-store": "0.0.3",
     "topo": "1.1.0",
-    "tough-cookie": "2.2.1",
+    "tough-cookie": "3.0.1",
     "tunnel": "0.0.2",
     "tunnel-agent": "0.2.0",
     "tweetnacl": "0.14.1",
