@@ -113,7 +113,7 @@
     "sshpk": "1.16.1",
     "stack-trace": "0.0.9",
     "string_decoder": "0.10.31",
-    "stringstream": "0.0.5",
+    "stringstream": "1.0.0",
     "strip-ansi": "3.0.1",
     "supports-color": "2.0.0",
     "through": "2.3.8",
