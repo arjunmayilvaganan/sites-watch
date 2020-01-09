@@ -110,7 +110,7 @@
     "semver": "4.3.6",
     "sntp": "0.1.4",
     "split": "0.3.3",
-    "sshpk": "1.7.4",
+    "sshpk": "1.16.1",
     "stack-trace": "0.0.9",
     "string_decoder": "0.10.31",
     "stringstream": "0.0.5",
