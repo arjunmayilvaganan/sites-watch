@@ -18,7 +18,7 @@
     "aws4": "1.2.1",
     "binaryheap": "0.0.3",
     "bindings": "1.2.1",
-    "bl": "1.0.3",
+    "bl": "4.0.3",
     "boom": "0.3.8",
     "buffer-writer": "1.0.1",
     "buffercursor": "0.0.12",
